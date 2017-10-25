@@ -5,6 +5,8 @@
 # Cybros Web Application
 
 Official web application of Cybros.
+Website is live now:
+https://cybroslnmiit.herokuapp.com/
 
 ## Getting Started
 
@@ -46,14 +48,34 @@ Then use database named "Cybros", in this all the user's data is saved in the co
 OR if you want to generate a ".csv" file use:
 ```
 $ mongoexport --host localhost --db Cybros --collection users --csv --out text.csv --fields username,Password,Email
-``` 
+```
+## Email Config
+To configure signup authentication from email part you need to replace "YOUR-EMAIL-ID" with your email ID and "PASSWORD" with your password in routes/signup.js. and possibly configure your EMAIL account's security options.
+
+## Create administrator
+
+Go to mongo terminal by typing
+```
+$ mongo
+```
+Use the correct database by typing
+```
+$ use Cybros
+```
+Now you have to insert an admin data manually in mongoDB
+and make sure you make "HasAccess" set to "true" as it is "false" by default
+```
+db.admins.insert({username:YOURUSERNAME, Password:YOURPASSWORD, HasAccess:true});
+```
+Admin panel can be accessed from: http://localhost:3000/admin/
+
 ## Built With
 
-* [Nodejs]
-* [ExpressJS]
-* [MongoDB]
-* [JQuery]
-* [Bootstrap]
+* [Nodejs](https://nodejs.org/en/)
+* [ExpressJS](https://expressjs.com/)
+* [MongoDB](https://www.mongodb.com/)
+* [JQuery](https://jquery.com/)
+* [Bootstrap](http://getbootstrap.com/)
 
 ## Contributing
 
@@ -61,5 +83,5 @@ Just open an issue with your suggestion.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md] file for details
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 

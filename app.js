@@ -6,7 +6,20 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 
-// Setting up mongoose 
+//hbs stuff start
+var hbs = require('hbs');
+hbs.registerPartials(__dirname + '/views/partials');
+
+//https only
+function requireHTTPS(req, res, next) {
+    // The 'x-forwarded-proto' check is for Heroku
+    if (!req.secure && req.get('x-forwarded-proto') !== 'https' && process.env.NODE_ENV !== "development") {
+        return res.redirect('https://' + req.get('host') + req.url);
+    }
+    next();
+}
+
+// Setting up mongoose
 var mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 var db = mongoose.connect("mongodb://localhost/Cybros",{useMongoClient: true});
@@ -14,8 +27,11 @@ var db = mongoose.connect("mongodb://localhost/Cybros",{useMongoClient: true});
 // routes to static and functional pages
 var index = require('./routes/index');
 var signup = require('./routes/signup');
+var admin = require('./routes/admin');
 
 var app = express();
+
+//app.listen(8000);
 
 // view engine setup --using handelbars
 app.set('views', path.join(__dirname, 'views'));
@@ -23,10 +39,11 @@ app.set('view engine', 'hbs');
 
 // using express-sessions to manage session
 app.use(session({
-  secret: 'cybros',
+  secret: "CybrosIsHere",
   resave: true,
   saveUninitialized: false
 }));
+
 app.use(favicon(path.join(__dirname, 'public', 'favicon.png')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -38,6 +55,7 @@ app.use(express.static(path.join(__dirname, '/')));
 
 app.use('/', index);
 app.use('/signup', signup);
+app.use('/admin', admin);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -56,5 +74,16 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+//RegisterHelper for checking equality
+//Use this to check equality..
+//instead of {{#if}} use {{#ifCond}}
+hbs.registerHelper('ifCond', function(v1, v2, options) {
+  if(v1 === v2) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+});
+
 
 module.exports = app;
